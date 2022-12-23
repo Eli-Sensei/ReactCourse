@@ -4,7 +4,7 @@ import Task from "./Task";
 const TaskList = ({tasks, setTaskStatus, deleteTask}) => {
     // console.warn(tasks)
     return (
-        <ul>
+        <ul className='task-ul'>
             {
                 tasks.map(task => (
                     <li key={task.id} className={"task-item" + (task.isDone ? " task-item-checked" : "")}>
