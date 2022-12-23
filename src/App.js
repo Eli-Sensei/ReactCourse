@@ -9,7 +9,7 @@ class App extends Component {
         this.state = { 
             nextId: 6,
             tasks: [
-                {id: 0, label: "Chier maintant", isDone: false},
+                {id: 0, label: "faire caca maintenant", isDone: false},
                 {id: 1, label: "chercher le petit", isDone: false},
                 {id: 2, label: "lacher une caisse", isDone: true},
                 {id: 3, label: "faire a manger", isDone: true},
@@ -19,6 +19,7 @@ class App extends Component {
         }
 
         this.addTask = this.addTask.bind(this)
+        this.setTaskStatus = this.setTaskStatus.bind(this)
     }
 
     addTask(label) {
@@ -33,12 +34,31 @@ class App extends Component {
         })
     }
 
+    setTaskStatus(taskId, isDone){
+        console.log(taskId, isDone)
+    }
+
+    componentDidMount(){
+        fetch("https://jsonplaceholder.typicode.com/users/10/todos")
+        .then(res => res.json())
+        .then(tasks => {
+            this.setState({
+                tasks: tasks.map(task => ({
+                    id: task.id,
+                    label: task.title,
+                    isDone: false
+                })),
+                nextId: Math.max(...tasks.map(task => task.id)) + 1
+            })
+        })
+    }
+
     render(){
         console.log(this.state.tasks)
         return (
             <div>
                 <h1>Tâches</h1>
-                <TaskList tasks={this.state.tasks} />
+                <TaskList tasks={this.state.tasks} setTaskStatus={this.setTaskStatus} />
                 <TaskForm addTask={this.addTask} />
             </div>
         )
