@@ -20,6 +20,7 @@ class App extends Component {
 
         this.addTask = this.addTask.bind(this)
         this.setTaskStatus = this.setTaskStatus.bind(this)
+        this.deleteTask = this.deleteTask.bind(this)
     }
 
     addTask(label) {
@@ -34,9 +35,6 @@ class App extends Component {
         })
     }
 
-    setTaskStatus(taskId, isDone){
-        console.log(taskId, isDone)
-    }
 
     componentDidMount(){
         fetch("https://jsonplaceholder.typicode.com/users/10/todos")
@@ -52,14 +50,39 @@ class App extends Component {
             })
         })
     }
+    
+    setTaskStatus(taskId, isDone) { 
+        const tasks = this.state.tasks 
+        const taskIndex = tasks.findIndex(t => t.id === taskId) 
+        const tasksBefore = tasks.slice(0, taskIndex) 
+        const tasksAfter = tasks.slice(taskIndex + 1)
+        const newTask = tasks[taskIndex]
+        newTask.isDone = isDone
+        this.setState({ 
+          tasks: [...tasksBefore, newTask, ...tasksAfter] 
+        })
+    } 
+
+    deleteTask(taskId){
+        const tasks = this.state.tasks 
+        const taskIndex = tasks.findIndex(t => t.id === taskId) 
+        const tasksBefore = tasks.slice(0, taskIndex) 
+        const tasksAfter = tasks.slice(taskIndex + 1)
+        this.setState({ 
+          tasks: [...tasksBefore, ...tasksAfter] 
+        })
+
+        console.log(tasks[taskIndex])
+    }
 
     render(){
-        console.log(this.state.tasks)
+        // console.log(this.state.tasks)
         return (
             <div>
                 <h1>Tâches</h1>
-                <TaskList tasks={this.state.tasks} setTaskStatus={this.setTaskStatus} />
+                <TaskList tasks={this.state.tasks} setTaskStatus={this.setTaskStatus} deleteTask={this.deleteTask}/>
                 <TaskForm addTask={this.addTask} />
+                <button onClick={()=>console.log(this.state.tasks)}>show tasks</button>
             </div>
         )
         

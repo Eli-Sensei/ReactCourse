@@ -1,3 +1,16 @@
 .task{
     color: rgb(139, 139, 139);
 }
+
+.task-item{
+    padding: 1rem;
+    width: 200px;
+    border-radius: 15px;
+    margin: 5px;
+    list-style: none;
+    border: 1px solid gray;
+}
+
+.task-item-checked{
+    background-color: rgb(0, 70, 0);
+}

@@ -28991,17 +28991,43 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 var Task = function Task(_ref) {
   var task = _ref.task,
+<<<<<<< HEAD
     setTaskStatus = _ref.setTaskStatus;
   return _react.default.createElement("div", null, _react.default.createElement("span", {
     className: "task"
   }, task.label), _react.default.createElement("input", {
+=======
+    setTaskStatus = _ref.setTaskStatus,
+    deleteTask = _ref.deleteTask;
+  return _react.default.createElement("label", {
+    className: "task"
+  }, _react.default.createElement("input", {
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
     type: "checkbox",
     checked: task.isDone,
     onChange: function onChange(event) {
       var isDone = event.target.checked;
       setTaskStatus(isDone);
+<<<<<<< HEAD
     }
   }));
+=======
+
+      // changement de couleur dynamic mais non généric
+      var taskLabel = event.target.parentElement.parentElement;
+      if (isDone) {
+        taskLabel.classList.add("task-item-checked");
+      } else {
+        taskLabel.classList.remove("task-item-checked");
+      }
+    }
+  }), task.label, _react.default.createElement("button", {
+    className: "delete-btn",
+    onClick: function onClick() {
+      deleteTask(task.id);
+    }
+  }, "Delete"));
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
 };
 var _default = Task;
 exports.default = _default;
@@ -29017,15 +29043,28 @@ var _Task = _interopRequireDefault(require("./Task"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 var TaskList = function TaskList(_ref) {
   var tasks = _ref.tasks,
+<<<<<<< HEAD
     _setTaskStatus = _ref.setTaskStatus;
+=======
+    _setTaskStatus = _ref.setTaskStatus,
+    _deleteTask = _ref.deleteTask;
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
   // console.warn(tasks)
   return _react.default.createElement("ul", null, tasks.map(function (task) {
     return _react.default.createElement("li", {
-      key: task.id
+      key: task.id,
+      className: "task-item" + (task.isDone ? " task-item-checked" : "")
     }, _react.default.createElement(_Task.default, {
       task: task,
       setTaskStatus: function setTaskStatus(isDone) {
+<<<<<<< HEAD
         return _setTaskStatus(task.id, isDone);
+=======
+        _setTaskStatus(task.id, isDone);
+      },
+      deleteTask: function deleteTask(taskId) {
+        _deleteTask(taskId);
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
       }
     }));
   }));
@@ -29099,6 +29138,10 @@ var App = /*#__PURE__*/function (_Component) {
     };
     _this.addTask = _this.addTask.bind(_assertThisInitialized(_this));
     _this.setTaskStatus = _this.setTaskStatus.bind(_assertThisInitialized(_this));
+<<<<<<< HEAD
+=======
+    _this.deleteTask = _this.deleteTask.bind(_assertThisInitialized(_this));
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
     return _this;
   }
   _createClass(App, [{
@@ -29117,6 +29160,7 @@ var App = /*#__PURE__*/function (_Component) {
   }, {
     key: "setTaskStatus",
     value: function setTaskStatus(taskId, isDone) {
+<<<<<<< HEAD
       console.log(taskId, isDone);
     }
   }, {
@@ -29141,15 +29185,54 @@ var App = /*#__PURE__*/function (_Component) {
       });
     }
   }, {
+=======
+      var tasks = this.state.tasks;
+      var taskIndex = tasks.findIndex(function (t) {
+        return t.id === taskId;
+      });
+      var tasksBefore = tasks.slice(0, taskIndex);
+      var tasksAfter = tasks.slice(taskIndex + 1);
+      var newTask = tasks[taskIndex];
+      newTask.isDone = isDone;
+      this.setState({
+        tasks: [].concat(_toConsumableArray(tasksBefore), [newTask], _toConsumableArray(tasksAfter))
+      });
+    }
+  }, {
+    key: "deleteTask",
+    value: function deleteTask(taskId) {
+      var tasks = this.state.tasks;
+      var taskIndex = tasks.findIndex(function (t) {
+        return t.id === taskId;
+      });
+      var tasksBefore = tasks.slice(0, taskIndex);
+      var tasksAfter = tasks.slice(taskIndex + 1);
+      this.setState({
+        tasks: [].concat(_toConsumableArray(tasksBefore), _toConsumableArray(tasksAfter))
+      });
+      console.log(tasks[taskIndex]);
+    }
+  }, {
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
     key: "render",
     value: function render() {
-      console.log(this.state.tasks);
+      var _this2 = this;
+      // console.log(this.state.tasks)
       return _react.default.createElement("div", null, _react.default.createElement("h1", null, "T\xE2ches"), _react.default.createElement(_TaskList.default, {
         tasks: this.state.tasks,
+<<<<<<< HEAD
         setTaskStatus: this.setTaskStatus
+=======
+        setTaskStatus: this.setTaskStatus,
+        deleteTask: this.deleteTask
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
       }), _react.default.createElement(_TaskForm.default, {
         addTask: this.addTask
-      }));
+      }), _react.default.createElement("button", {
+        onClick: function onClick() {
+          return console.log(_this2.state.tasks);
+        }
+      }, "show tasks"));
     }
   }]);
   return App;
@@ -29201,7 +29284,11 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
+<<<<<<< HEAD
   var ws = new WebSocket(protocol + '://' + hostname + ':' + "50576" + '/');
+=======
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50299" + '/');
+>>>>>>> 8a2efeeb51178f123449ba1c159aa4a6ce4e8644
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
