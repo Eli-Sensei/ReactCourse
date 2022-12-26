@@ -1,5 +1,7 @@
-import React, {Component} from "react";
+import React from "react";
+import PropTypes from "prop-types";
 import "../public/Task.css"
+import { taskShape } from "./shapes";
 
 const Task = ({task, setTaskStatus, deleteTask}) => {
     return (
@@ -31,5 +33,15 @@ const Task = ({task, setTaskStatus, deleteTask}) => {
             >Delete</button>
         </label>
     )
-}   
+}
+
+Task.propTypes = {
+    task: taskShape.isRequired,
+    setTaskStatus: PropTypes.func
+}
+
+Task.defaultProps = {
+    setTaskStatus: () => {}
+}
+
 export default Task;

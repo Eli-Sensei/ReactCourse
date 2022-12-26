@@ -1,104 +1,106 @@
-import React, {Component} from "react";
+import React, {Component, useState, useCallback, useEffect} from "react";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList"
 
 
-class App extends Component {
-    constructor(props){
-        super(props)
-        this.state = { 
-            tasks: [],
-            nextId: null,
-            isFetching: true,
-            hasError: false
+const App = () => {
+    const [nextId, setNextId] = useState(null)
+    const [tasks, setTasks] = useState([])
+    const [isFetching, setIsFetching] = useState(true)
+    const [hasError, setHasError] = useState(false)
+    const [hasFetchedFirst, setHasFetchedFirst] = useState(false)   
+
+    const setTaskStatus = useCallback(
+        (taskId, isDone) => {
+            console.log("prout", tasks)
+            const taskIndex = tasks.findIndex(t => t.id === taskId) 
+            const tasksBefore = tasks.slice(0, taskIndex) 
+            const tasksAfter = tasks.slice(taskIndex + 1)
+            const newTask = tasks[taskIndex]
+            newTask.isDone = isDone
+            setTasks([...tasksBefore, newTask, ...tasksAfter])
+        },
+        [tasks]
+    )
+
+    useEffect(() => {
+        if(!hasFetchedFirst){
+            setHasFetchedFirst(true)
+            setHasError(false)
+            setIsFetching(true)
+
+            fetch("https://my-json-server.typicode.com/Eli-Sensei/ReactCourse/tasks")
+            .then(res => {
+                // console.log("prout", res)
+                return res.json()
+            })
+            .then(newTasks => {
+                console.log("prout", newTasks)
+                setIsFetching(false)
+                setTasks(
+                    newTasks.map(task => ({
+                        id: task.id,
+                        label: task.title,
+                        isDone: false
+                    })),
+                )
+
+                setNextId(Math.max(tasks.map(task => task.id)) + 1)
+                
+            })
+            .catch(() => {
+                setHasError(true)
+                setIsFetching(false)
+            })
         }
+    })
 
-        this.addTask = this.addTask.bind(this)
-        this.setTaskStatus = this.setTaskStatus.bind(this)
-        this.deleteTask = this.deleteTask.bind(this)
-    }
+    const addTask = useCallback(
+        label => {
+            const newTask = {
+                id: nextId,
+                label,
+                isDone: false
+            }
+            console.log(nextId)
+            setNextId(nextId + 1)
+            setTasks([...tasks, newTask])
+        },
+        [nextId, tasks],
+    )
 
-    componentDidMount(){
-        fetch("https://jsonplaceholder.typicode.com/users/10/todos")
-        .then(res => res.json())
-        .then(tasks => {
-            this.setState({
-                isFetching: false,
-                tasks: tasks.map(task => ({
-                    id: task.id,
-                    label: task.title,
-                    isDone: false
-                })),
-                nextId: Math.max(...tasks.map(task => task.id)) + 1
-            })
-            
-        })
-        .catch(() => {
-            this.setState({
-                isFetching: false,
-                hasError: true
-            })
-        })
-    }
+    const deleteTask = useCallback(
+        taskId => {
+            const taskIndex = tasks.findIndex(t => t.id === taskId) 
+            const tasksBefore = tasks.slice(0, taskIndex) 
+            const tasksAfter = tasks.slice(taskIndex + 1)
+
+            setTasks([...tasksBefore, ...tasksAfter])
+
+            console.log(tasks[taskIndex])
+        },
+        [tasks]
+    )
+
+    if(hasError)
+    return <p>Oups, on dirait qu'une erreur s'est produite ^^"</p>
     
-    setTaskStatus(taskId, isDone) { 
-        const tasks = this.state.tasks 
-        const taskIndex = tasks.findIndex(t => t.id === taskId) 
-        const tasksBefore = tasks.slice(0, taskIndex) 
-        const tasksAfter = tasks.slice(taskIndex + 1)
-        const newTask = tasks[taskIndex]
-        newTask.isDone = isDone
-        this.setState({ 
-          tasks: [...tasksBefore, newTask, ...tasksAfter] 
-        })
-    } 
+    if(isFetching)
+    return <p>Chargement en cours....</p>
 
-    addTask(label) {
-        const newTask = {
-            id: this.state.nextId,
-            label,
-            isDone: false
-        }
-        this.setState({
-            nextId: this.state.nextId + 1, 
-            tasks: [...this.state.tasks, newTask]
-        })
-    }
 
-    deleteTask(taskId){
-        const tasks = this.state.tasks 
-        const taskIndex = tasks.findIndex(t => t.id === taskId) 
-        const tasksBefore = tasks.slice(0, taskIndex) 
-        const tasksAfter = tasks.slice(taskIndex + 1)
-        this.setState({ 
-          tasks: [...tasksBefore, ...tasksAfter] 
-        })
-
-        console.log(tasks[taskIndex])
-    }
-
-    render(){
+    return (
         
-        if(this.state.hasError)
-        return <p>Oups, on dirait qu'une erreur s'est produite ^^"</p>
-        
-        if(this.state.isFetching)
-        return <p>Chargement en cours....</p>
-
-        return (
-            <div>
-                <h1>Tâches</h1>
-                <TaskList 
-                    tasks={this.state.tasks}
-                    setTaskStatus={this.setTaskStatus}
-                    deleteTask={this.deleteTask}
-                />
-                <TaskForm addTask={this.addTask} />
-                <button onClick={()=>console.log(this.state.tasks)}>show tasks</button>
-            </div>
-        )
-        
-    }
+        <div> 
+            <h1>Tâches</h1> 
+            <TaskList 
+                tasks={tasks} 
+                setTaskStatus={setTaskStatus} 
+                deleteTask={deleteTask}
+            /> 
+            <TaskForm addTask={addTask} /> 
+        </div>
+    ) 
 }
 
 
